@@ -22,11 +22,12 @@ class WeatherController extends Controller
         try {
             $coords = $geocodingService->getCoordinates($city);
             $currentWeatherData = $weatherService->getCurrentWeather($coords['lat'], $coords['lon'], $unit);
+            $forecastData = $weatherService->getForecast($coords['lat'], $coords['lon'], $unit);
 
             return response()->json([
                 'location' => $coords,
                 'current_weather' => $currentWeatherData,
-                'forecast' => 'forecast',
+                'forecast' => $forecastData,
             ]);
         } catch(\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
