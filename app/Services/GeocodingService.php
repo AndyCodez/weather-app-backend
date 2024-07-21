@@ -25,9 +25,13 @@ class GeocodingService implements GeocodingServiceInterface {
         $data = json_decode($response->getBody(), true);
 
         if (isset($data['results'][0]['geometry'])) {
+            $coords = $data['results'][0]['geometry'];
+            $cityName = $data['results'][0]['formatted'];
+
             return [
-                'lat' => $data['results'][0]['geometry']['lat'],
-                'lon' => $data['results'][0]['geometry']['lng'],
+                'lat' => $coords['lat'],
+                'lon' => $coords['lng'],
+                'city' => $cityName
             ];
         }
 
