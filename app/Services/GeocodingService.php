@@ -11,26 +11,26 @@ class GeocodingService implements GeocodingServiceInterface {
 
     public function __construct() {
         $this->client = new Client();
-        $this->apiKey = env('OPENCAGE_API_KEY');
+        $this->apiKey = env('OPENWEATHERMAP_API_KEY');
     }
 
     public function getCoordinates(string $city): array {
-        $response = $this->client->get('https://api.opencagedata.com/geocode/v1/json', [
+        $response = $this->client->get('https://api.openweathermap.org/data/2.5/weather', [
             'query' => [
                 'q' => $city,
-                'key' => $this->apiKey
+                'appid' => $this->apiKey
             ]
         ]);
 
         $data = json_decode($response->getBody(), true);
 
-        if (isset($data['results'][0]['geometry'])) {
-            $coords = $data['results'][0]['geometry'];
-            $cityName = $data['results'][0]['formatted'];
+        if (isset($data['coord'])) {
+            $coords = $data['coord'];
+            $cityName = $data['name'];
 
             return [
                 'lat' => $coords['lat'],
-                'lon' => $coords['lng'],
+                'lon' => $coords['lon'],
                 'city' => $cityName
             ];
         }
