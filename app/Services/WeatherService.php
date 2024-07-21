@@ -56,6 +56,13 @@ class WeatherService implements WeatherServiceInterface {
         $daysCount = 0;
 
         foreach ($forecastData['list'] as $forecast) {
+
+            // Skip todays data
+            if ($daysCount === 0) {
+                $daysCount++;
+                continue;
+            } 
+
             $date = date('Y-m-d', $forecast['dt']);
 
             if (!isset($dailyForecast[$date])) {
@@ -73,7 +80,7 @@ class WeatherService implements WeatherServiceInterface {
             }
 
             // Stop processing after 3 days
-            if ($daysCount === 3) {
+            if ($daysCount === 4) {
                 break;
             }
         }
