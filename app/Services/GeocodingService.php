@@ -30,5 +30,7 @@ class GeocodingService implements GeocodingServiceInterface {
                 'lon' => $data['results'][0]['geometry']['lng'],
             ];
         }
+
+        throw new \Exception("Could not find city: $city");
     }
 }

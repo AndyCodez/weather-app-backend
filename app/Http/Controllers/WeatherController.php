@@ -12,13 +12,21 @@ class WeatherController extends Controller
     public function getWeather(Request $request, GeocodingService $geocodingService): JsonResponse {
 
         $city = $request->query('city');
+        
+        if (!$city) {
+            return response()->json(["error" => "City is required"], 400);
+        }
 
-        $coords = $geocodingService->getCoordinates($city);
+        try {
+            $coords = $geocodingService->getCoordinates($city);
+            return response()->json([
+                'location' => $coords,
+                'current_weather' => 'current_weather',
+                'forecast' => 'forecast',
+            ]);
+        } catch(\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
 
-        return response()->json([
-            'location' => $coords,
-            'current_weather' => 'current_weather',
-            'forecast' => 'forecast',
-        ]);
     }
 }
