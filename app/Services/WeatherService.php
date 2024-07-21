@@ -26,7 +26,13 @@ class WeatherService implements WeatherServiceInterface {
 
         $data = json_decode($response->getBody(), true);
 
-        return $data;
+        return [
+            'temp' => $data['main']['temp'],
+            'description' => $data['weather'][0]['description'],
+            'date' => date('Y-m-d', $data['dt']),
+            'windSpeed' => $data['wind']['speed'],
+            'humidity' => $data['main']['humidity'],
+        ];
     }
 
     public function getForecast(float $lat, float $lon, string $unit) {
