@@ -14,7 +14,7 @@ class WeatherService implements WeatherServiceInterface {
         $this->apiKey = env('OPENWEATHERMAP_API_KEY');
     }
 
-    public function getCurrentWeather(float $lat, float $lon, string $unit) {
+    public function getCurrentWeather(float $lat, float $lon, string $unit): array {
         $response = $this->client->get('https://api.openweathermap.org/data/2.5/weather', [
             'query' => [
                 'lat' => $lat, 
@@ -35,7 +35,7 @@ class WeatherService implements WeatherServiceInterface {
         ];
     }
 
-    public function getForecast(float $lat, float $lon, string $unit) {
+    public function getForecast(float $lat, float $lon, string $unit): array {
         $response = $this->client->get('https://api.openweathermap.org/data/2.5/forecast', [
             'query' => [
                 'lat' => $lat, 
@@ -47,6 +47,37 @@ class WeatherService implements WeatherServiceInterface {
 
         $data = json_decode($response->getBody(), true);
 
-        return $data;
+        return $this->getThreeDayForecast($data);
     }
+
+    private function getThreeDayForecast(array $forecastData): array {
+        $dailyForecast = [];
+        $daysCount = 0;
+
+        foreach ($forecastData['list'] as $forecast) {
+            $date = date('Y-m-d', $forecast['dt']);
+
+            if (!isset($dailyForecast[$date])) {
+                $dailyForecast[$date] = [
+                    'date' => $date,
+                    'tempMin' => $forecast['main']['temp_min'],
+                    'tempMax' => $forecast['main']['temp_max'],
+                    'description' => $forecast['weather'][0]['description'],
+                    'icon' => $forecast['weather'][0]['icon'],
+                ];
+                $daysCount++;
+            } else {
+                $dailyForecast[$date]['tempMin'] = min($dailyForecast[$date]['tempMin'], $forecast['main']['temp_min']);
+                $dailyForecast[$date]['tempMax'] = max($dailyForecast[$date]['tempMax'], $forecast['main']['temp_max']);
+            }
+
+            // Stop processing after 3 days
+            if ($daysCount === 3) {
+                break;
+            }
+        }
+
+        return array_values($dailyForecast);
+    }
+
 }
