@@ -31,7 +31,7 @@ class WeatherService implements WeatherServiceInterface {
             'description' => $data['weather'][0]['description'],
             'icon' => $data['weather'][0]['icon'],
             'date' => date('Y-m-d', $data['dt']),
-            'windSpeed' => $data['wind']['speed'] * 3.6, // Convert from m/s to km/h
+            'windSpeed' => round($data['wind']['speed'] * 3.6, 2), // Convert from m/s to km/h
             'windDegrees' => $data['wind']['deg'],
             'windDirection' => $this->convertToDirection($data['wind']['deg']),
             'humidity' => $data['main']['humidity'],
