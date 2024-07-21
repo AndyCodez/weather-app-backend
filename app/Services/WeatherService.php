@@ -31,7 +31,9 @@ class WeatherService implements WeatherServiceInterface {
             'description' => $data['weather'][0]['description'],
             'icon' => $data['weather'][0]['icon'],
             'date' => date('Y-m-d', $data['dt']),
-            'windSpeed' => $data['wind']['speed'],
+            'windSpeed' => $data['wind']['speed'] * 3.6, // Convert from m/s to km/h
+            'windDegrees' => $data['wind']['deg'],
+            'windDirection' => $this->convertToDirection($data['wind']['deg']),
             'humidity' => $data['main']['humidity'],
         ];
     }
@@ -86,6 +88,22 @@ class WeatherService implements WeatherServiceInterface {
         }
 
         return array_values($dailyForecast);
+    }
+
+    private function convertToDirection(float $degrees): string {
+        if ($degrees < 0 || $degrees >= 360) {
+            throw new InvalidArgumentException("Degrees must be between 0 and 359.");
+        }
+    
+        $directions = [
+            "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+            "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
+        ];
+    
+        // Calculate the index by dividing degrees by 22.5 and rounding
+        $index = round($degrees / 22.5) % 16;
+        
+        return $directions[$index];
     }
 
 }
