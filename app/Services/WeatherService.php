@@ -14,12 +14,12 @@ class WeatherService implements WeatherServiceInterface {
         $this->apiKey = env('OPENWEATHERMAP_API_KEY');
     }
 
-    public function getCurrentWeather(float $lat, float $lon, string $unit): array {
+    public function getCurrentWeather(float $lat, float $lon, string $units): array {
         $response = $this->client->get('https://api.openweathermap.org/data/2.5/weather', [
             'query' => [
                 'lat' => $lat, 
                 'lon' => $lon, 
-                'unit' => $unit,
+                'units' => $units,
                 'appid' => $this->apiKey
             ]
         ]);
@@ -29,18 +29,19 @@ class WeatherService implements WeatherServiceInterface {
         return [
             'temp' => $data['main']['temp'],
             'description' => $data['weather'][0]['description'],
+            'icon' => $data['weather'][0]['icon'],
             'date' => date('Y-m-d', $data['dt']),
             'windSpeed' => $data['wind']['speed'],
             'humidity' => $data['main']['humidity'],
         ];
     }
 
-    public function getForecast(float $lat, float $lon, string $unit): array {
+    public function getForecast(float $lat, float $lon, string $units): array {
         $response = $this->client->get('https://api.openweathermap.org/data/2.5/forecast', [
             'query' => [
                 'lat' => $lat, 
                 'lon' => $lon, 
-                'unit' => $unit,
+                'units' => $units,
                 'appid' => $this->apiKey
             ]
         ]);

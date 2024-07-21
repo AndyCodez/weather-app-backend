@@ -13,7 +13,7 @@ class WeatherController extends Controller
     public function getWeather(Request $request, GeocodingService $geocodingService, WeatherService $weatherService): JsonResponse {
 
         $city = $request->query('city');
-        $unit = $request->query('unit', 'metric');
+        $units = $request->query('units');
         
         if (!$city) {
             return response()->json(["error" => "City is required"], 400);
@@ -21,8 +21,8 @@ class WeatherController extends Controller
 
         try {
             $coords = $geocodingService->getCoordinates($city);
-            $currentWeatherData = $weatherService->getCurrentWeather($coords['lat'], $coords['lon'], $unit);
-            $forecastData = $weatherService->getForecast($coords['lat'], $coords['lon'], $unit);
+            $currentWeatherData = $weatherService->getCurrentWeather($coords['lat'], $coords['lon'], $units);
+            $forecastData = $weatherService->getForecast($coords['lat'], $coords['lon'], $units);
 
             return response()->json([
                 'location' => $coords,
